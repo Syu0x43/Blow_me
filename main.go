@@ -17,6 +17,7 @@ const (
 type cell struct {
 	mine, open, flaged bool
 	neighboors         int
+	face               string
 }
 
 type game struct {
@@ -45,6 +46,9 @@ func (g *game) generateMines() {
 func (g *game) reveal(x, y int) {
 }
 
+func (g *game) swap() {
+}
+
 func (g *game) draw() {
 	cur := cursor{1, 10}
 
@@ -59,9 +63,9 @@ func (g *game) draw() {
 
 		outBuffer.WriteString("\x1b[1;1H")
 
-		for _, row := range g.g {
-			for range row {
-				outBuffer.WriteString("[]")
+		for i, row := range g.g {
+			for column := range row {
+				outBuffer.WriteString(g.g[i][column].face)
 			}
 			outBuffer.WriteString("\r\n")
 
@@ -123,14 +127,20 @@ func main() {
 
 	g := game{minesQuant: rand.IntN(12), placed: true, flags: 1}
 
+	for i, row := range g.g {
+		for column := range row {
+			g.g[i][column] = cell{open: true, neighboors: 0, face: "[]"}
+		}
+	}
+
 	// Row 0: Open cells with neighbor counts
-	g.g[0][0] = cell{open: true, neighboors: 0}
-	g.g[0][1] = cell{open: true, neighboors: 1}
-	g.g[0][2] = cell{flaged: true, mine: true} // Flagged mine
+	g.g[0][0] = cell{open: true, neighboors: 0, face: "[]"}
+	g.g[0][1] = cell{open: true, neighboors: 1, face: "[]"}
+	g.g[0][2] = cell{flaged: true, mine: true, face: "[]"} // Flagged mine
 
 	// Row 1: Revealed mine (for debugging) & hidden cells
-	g.g[1][1] = cell{open: true, mine: true}
-	g.g[1][2] = cell{open: true, neighboors: 2}
+	g.g[1][1] = cell{open: true, mine: true, face: "[]"}
+	g.g[1][2] = cell{open: true, neighboors: 2, face: "[]"}
 
 	g.draw()
 
