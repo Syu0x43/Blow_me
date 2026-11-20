@@ -67,7 +67,7 @@ func (g *game) draw() {
 
 		}
 
-		fmt.Fprintf(&outBuffer, "\r\n CurCount: %d x , %d y", cur.x, cur.y)
+		// TODO debug fmt.Fprintf(&outBuffer, "\r\n CurCount: %d x , %d y", cur.x, cur.y)
 
 		fmt.Fprintf(&outBuffer, "\x1b[%d;%dH", cur.y, cur.x)
 
@@ -81,17 +81,20 @@ func (g *game) draw() {
 		}
 		switch buf[0] {
 		case 'w':
-			if cur.y <= H {
+			if cur.y-1 > 0 {
 				cur.y -= 1
 			}
 		case 's':
-			cur.y += 1
+			if cur.y+1 <= H {
+				cur.y += 1
+			}
+
 		case 'a':
-			if cur.x >= 1 {
+			if cur.x-1 > 0 {
 				cur.x -= 2
 			}
 		case 'd':
-			if cur.x <= (W*2)-1 {
+			if cur.x+2 <= (W * 2) { // Width times two cause each [] owns 2 spaces
 				cur.x += 2
 			}
 		}
