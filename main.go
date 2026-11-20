@@ -46,30 +46,59 @@ func (g *game) reveal(x, y int) {
 }
 
 func (g *game) draw() {
+	cur := cursor{1, 10}
+
 	buf := make([]byte, 1)
 	var outBuffer bytes.Buffer
 
-	for {
+	outBuffer.WriteString("\033[2J")
+	os.Stdout.Write(outBuffer.Bytes())
 
+	for {
 		outBuffer.Reset()
+
+		outBuffer.WriteString("\x1b[1;1H")
 
 		for _, row := range g.g {
 			for range row {
 				outBuffer.WriteString("[]")
 			}
 			outBuffer.WriteString("\r\n")
+
 		}
+
+		fmt.Fprintf(&outBuffer, "\r\n CurCount: %d x , %d y", cur.x, cur.y)
+
+		fmt.Fprintf(&outBuffer, "\x1b[%d;%dH", cur.y, cur.x)
 
 		os.Stdout.Write(outBuffer.Bytes())
 
 		if _, err := os.Stdin.Read(buf); err != nil {
 			break
 		}
-
 		if buf[0] == 'q' || buf[0] == 3 {
 			break
 		}
+		switch buf[0] {
+		case 'w':
+			if cur.y <= H {
+				cur.y -= 1
+			}
+		case 's':
+			cur.y += 1
+		case 'a':
+			if cur.x >= 1 {
+				cur.x -= 2
+			}
+		case 'd':
+			if cur.x <= (W*2)-1 {
+				cur.x += 2
+			}
+		}
 	}
+
+	outBuffer.WriteString("\033[2J")
+	os.Stdout.Write(outBuffer.Bytes())
 }
 
 func main() {
