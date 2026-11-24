@@ -196,7 +196,6 @@ func (g *game) draw() {
 
 	buf := make([]byte, 1)
 	var outBuffer bytes.Buffer
-
 	outBuffer.WriteString("\033[2J")
 	os.Stdout.Write(outBuffer.Bytes())
 
@@ -213,6 +212,9 @@ func (g *game) draw() {
 
 		}
 
+		fmt.Fprintf(&outBuffer, "Flags: %d  %s\x1b[K\r\n", g.flags, g.status)
+		fmt.Fprintf(&outBuffer, "\x1b[%d;%dH", cur.y, cur.x)
+		os.Stdout.Write(outBuffer.Bytes())
 		// TODO debug fmt.Fprintf(&outBuffer, "\r\n CurCount: %d x , %d y", cur.x, cur.y)
 
 		fmt.Fprintf(&outBuffer, "\x1b[%d;%dH", cur.y, cur.x)
